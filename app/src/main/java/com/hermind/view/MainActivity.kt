@@ -5,6 +5,7 @@ import android.support.design.widget.NavigationView
 import android.support.v4.view.GravityCompat
 import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.ActionBarDrawerToggle
+import android.support.v7.app.AlertDialog
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.Toolbar
 import android.util.Log
@@ -14,12 +15,13 @@ import android.view.View
 import com.hermind.R
 import com.hermind.adapter.MainDataAdapter
 import com.hermind.iview.IMainView
+import com.hermind.model.bean.VersionModel
 import com.hermind.model.bmob.Message
 import com.hermind.presenter.MainPresenter
+import com.hermind.public.utils.SystemUtils
 import kotlinx.android.synthetic.main.content_main.*
 
 class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedListener, IMainView {
-
 
     private var skip = 10
     //remember init data list
@@ -57,6 +59,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
     private fun initData() {
         mainPresenter.loadDatas()
+        mainPresenter.getVersionInfo()
     }
 
 
@@ -91,7 +94,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     override fun loadMoreDatas(list: List<Message>) {
         //分页加载更多，每次加载最多10条数据
 
-        Log.i("lgq","list:" + list.toString())
+        Log.i("lgq", "list:" + list.toString())
         if (list.isEmpty()) {
             toast(getString(R.string.no_more_data))
         } else if (list.size < skip) {
@@ -99,7 +102,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             if (datas.size < list.size + skip) {
                 datas.addAll(list)
                 mainDataAdapter?.notifyDataSetChanged()
-            } else if (datas.size == list.size + skip){
+            } else if (datas.size == list.size + skip) {
                 toast(getString(R.string.no_more_data))
             }
         } else {
@@ -111,6 +114,25 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     }
 
     override fun loadMoreDatasFailed(e: Exception) {
+        toast(e.toString())
+    }
+
+    override fun reqLastestVersion(versionModel: VersionModel) {
+        if (versionModel.versionCode > SystemUtils.getLocalVersionCode(this)) {
+            AlertDialog.Builder(this).setTitle("提示")
+                    .setMessage("发现新版本" + versionModel.versionName + ",是否更新?")
+                    .setNegativeButton("取消", { dialog, _ ->
+                        dialog.dismiss()
+                    })
+                    .setPositiveButton("确认", { dialog, which ->
+                        dialog.dismiss()
+                        toast("更新下载")
+                    })
+                    .show()
+        }
+    }
+
+    override fun reqVersionFailed(e: Exception) {
         toast(e.toString())
     }
 
