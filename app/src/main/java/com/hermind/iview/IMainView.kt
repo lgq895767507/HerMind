@@ -8,5 +8,13 @@ interface IMainView {
 
     fun showDatasFailed(e: Exception)
 
+    fun refreshDatas(list: List<Message>)
+
+    fun refreshDatasFailed(e: Exception)
+
+    fun loadMoreDatas(list: List<Message>)
+
+    fun loadMoreDatasFailed(e: Exception)
+
 
 }
