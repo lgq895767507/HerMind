@@ -17,9 +17,7 @@ interface IMainView {
 
     fun loadMoreDatasFailed(e: Exception)
 
-    fun reqLastestVersion(versionModel: VersionModel)
-
-    fun reqVersionFailed(e: Exception)
+   
 
 
 }

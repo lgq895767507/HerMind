@@ -14,20 +14,27 @@ import android.view.MenuItem
 import android.view.View
 import com.hermind.R
 import com.hermind.adapter.MainDataAdapter
+import com.hermind.iview.IDownloadView
 import com.hermind.iview.IMainView
+import com.hermind.iview.IVersionView
 import com.hermind.model.bean.VersionModel
 import com.hermind.model.bmob.Message
+import com.hermind.presenter.DownloadPresenter
 import com.hermind.presenter.MainPresenter
+import com.hermind.presenter.VersionPresenter
 import com.hermind.public.utils.SystemUtils
 import kotlinx.android.synthetic.main.content_main.*
 
-class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedListener, IMainView {
+class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedListener, IMainView, IDownloadView, IVersionView {
+
 
     private var skip = 10
     //remember init data list
     private var datas: ArrayList<Message> = ArrayList()
     private var mainDataAdapter: MainDataAdapter? = null
     private val mainPresenter by lazy { MainPresenter(this) }
+    private val downloadPresenter by lazy { DownloadPresenter(this) }
+    private val versionPresenter by lazy { VersionPresenter(this) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,7 +66,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
     private fun initData() {
         mainPresenter.loadDatas()
-        mainPresenter.getVersionInfo()
+        versionPresenter.getVersionInfo()
     }
 
 
@@ -117,6 +124,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         toast(e.toString())
     }
 
+
     override fun reqLastestVersion(versionModel: VersionModel) {
         if (versionModel.versionCode > SystemUtils.getLocalVersionCode(this)) {
             AlertDialog.Builder(this).setTitle("提示")
@@ -127,10 +135,12 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                     .setPositiveButton("确认", { dialog, which ->
                         dialog.dismiss()
                         toast("更新下载")
+                        downloadPresenter.getAPkFileAndUpdate()
                     })
                     .show()
         }
     }
+
 
     override fun reqVersionFailed(e: Exception) {
         toast(e.toString())
@@ -178,5 +188,20 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         val drawer = findViewById<View>(R.id.drawer_layout) as DrawerLayout
         drawer.closeDrawer(GravityCompat.START)
         return true
+    }
+
+
+    override fun downloadSuccess() {
+        Log.i("lgq", "downloadSuccess")
+        /*   val currentStatus = status
+           progress.max = status.totalSize.toInt()
+           progress.progress = status.downloadSize.toInt()*/
+
+        /* percent.text = status.percent()
+         size.text = status.formatString()*/
+    }
+
+    override fun downloadFailed(e: Exception) {
+        toast(e.toString())
     }
 }

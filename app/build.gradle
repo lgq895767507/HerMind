@@ -39,7 +39,7 @@ dependencies {
     implementation 'cn.bmob.android:bmob-sdk:3.6.2'
     implementation 'cn.bmob.android:http-legacy:1.0'
     //rx
-    implementation 'zlc.season:rxdownload3:1.2.5'
+   // implementation 'zlc.season:rxdownload3:1.2.6'
 }
 repositories {
     mavenCentral()
