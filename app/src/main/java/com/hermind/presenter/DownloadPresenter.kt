@@ -20,19 +20,24 @@ class DownloadPresenter(val iDownloadView: IDownloadView) {
             override fun done(p0: MutableList<ApkStore>?, exception: BmobException?) {
                 if (exception == null) {
                     val apkFile = p0?.get(0)?.apk_file
-                    val saveFile: File = File(Environment.getExternalStorageDirectory().path)
+                    val saveFile = File(Environment.getExternalStorageDirectory(), apkFile?.filename)
                     apkFile?.download(saveFile, object : DownloadFileListener() {
 
                         override fun onProgress(value: Int?, newworkSpeed: Long) {
-                            Log.i("lgq", "下载进度：$value,$newworkSpeed")
+                            iDownloadView.downloadProgress(value ?: 0)
                         }
 
                         override fun done(p0: String?, p1: BmobException?) {
-                            iDownloadView.downloadSuccess()
+                            if (p1 == null) {
+                                iDownloadView.downloadSuccess()
+                            } else {
+                                iDownloadView.downloadFailed(p1)
+                            }
+
                         }
 
                     })
-                    Log.i("lgq", "p0:" + p0.toString())
+
 
                 } else {
                     iDownloadView.downloadFailed(exception)

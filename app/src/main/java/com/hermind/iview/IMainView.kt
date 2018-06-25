@@ -1,6 +1,5 @@
 package com.hermind.iview
 
-import com.hermind.model.bean.VersionModel
 import com.hermind.model.bmob.Message
 
 interface IMainView {
@@ -16,8 +15,5 @@ interface IMainView {
     fun loadMoreDatas(list: List<Message>)
 
     fun loadMoreDatasFailed(e: Exception)
-
-   
-
 
 }

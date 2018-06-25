@@ -1,6 +1,10 @@
 package com.hermind.view
 
+import android.Manifest
+import android.app.Dialog
+import android.app.ProgressDialog
 import android.os.Bundle
+import android.os.Handler
 import android.support.design.widget.NavigationView
 import android.support.v4.view.GravityCompat
 import android.support.v4.widget.DrawerLayout
@@ -9,9 +13,12 @@ import android.support.v7.app.AlertDialog
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.Toolbar
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.ProgressBar
+import android.widget.TextView
 import com.hermind.R
 import com.hermind.adapter.MainDataAdapter
 import com.hermind.iview.IDownloadView
@@ -23,7 +30,9 @@ import com.hermind.presenter.DownloadPresenter
 import com.hermind.presenter.MainPresenter
 import com.hermind.presenter.VersionPresenter
 import com.hermind.public.utils.SystemUtils
+import com.tbruyelle.rxpermissions2.RxPermissions
 import kotlinx.android.synthetic.main.content_main.*
+
 
 class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedListener, IMainView, IDownloadView, IVersionView {
 
@@ -36,6 +45,12 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     private val downloadPresenter by lazy { DownloadPresenter(this) }
     private val versionPresenter by lazy { VersionPresenter(this) }
 
+    //init progress view
+    private var progressText: TextView? = null
+    private var progressBar:ProgressBar? = null
+    private var progressDialog: AlertDialog? = null
+    private val progressHandler: ProgressHandler = ProgressHandler()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -43,6 +58,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         formatInitView()
         //myself view init
         initView()
+        initPermission()
         initData()
     }
 
@@ -62,6 +78,20 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
     private fun initView() {
         recycleView.layoutManager = LinearLayoutManager(this)
+    }
+
+    private fun initPermission() {
+        val rxPermissions = RxPermissions(this)
+        rxPermissions.request(Manifest.permission.READ_PHONE_STATE,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                .subscribe({
+                    if (it) {
+                        toast("同意权限")
+                    } else {
+                        toast("拒绝权限")
+                    }
+                })
+
     }
 
     private fun initData() {
@@ -136,6 +166,12 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                         dialog.dismiss()
                         toast("更新下载")
                         downloadPresenter.getAPkFileAndUpdate()
+                        progressDialog = AlertDialog.Builder(this).create()
+                        val view = LayoutInflater.from(this).inflate(R.layout.layout_progress_dialog, null)
+                        progressDialog?.setView(view)
+                        progressText = view.findViewById<TextView>(R.id.progressText)
+                        progressBar = view.findViewById(R.id.progressBar)
+                        progressDialog?.show()
                     })
                     .show()
         }
@@ -190,18 +226,29 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         return true
     }
 
+    override fun downloadProgress(progress: Int) {
+        val message = progressHandler.obtainMessage()
+        message.arg1 = progress
+        progressHandler.sendMessage(message)
+    }
+
 
     override fun downloadSuccess() {
-        Log.i("lgq", "downloadSuccess")
-        /*   val currentStatus = status
-           progress.max = status.totalSize.toInt()
-           progress.progress = status.downloadSize.toInt()*/
-
-        /* percent.text = status.percent()
-         size.text = status.formatString()*/
+        toast("下载完成")
+        progressDialog?.dismiss()
     }
 
     override fun downloadFailed(e: Exception) {
-        toast(e.toString())
+        toast("下载失败" + e.toString())
+        progressDialog?.dismiss()
+    }
+
+
+    inner class ProgressHandler : Handler() {
+        override fun handleMessage(msg: android.os.Message?) {
+            super.handleMessage(msg)
+            progressText?.text = "正在下载:" + msg?.arg1 + "%"
+            progressBar?.progress = msg?.arg1 ?: 0
+        }
     }
 }

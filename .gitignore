@@ -10,3 +10,6 @@
 .externalNativeBuild
 *.apk
 /.idea/
+app/release/
+app.jks
+.idea/caches/

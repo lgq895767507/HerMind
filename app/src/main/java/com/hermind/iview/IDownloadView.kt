@@ -6,6 +6,8 @@ package com.hermind.iview
  */
 interface IDownloadView{
 
+    fun downloadProgress(progress: Int)
+
     fun downloadSuccess()
 
     fun downloadFailed(e: Exception)
