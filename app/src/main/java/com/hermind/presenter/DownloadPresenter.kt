@@ -29,7 +29,7 @@ class DownloadPresenter(val iDownloadView: IDownloadView) {
 
                         override fun done(p0: String?, p1: BmobException?) {
                             if (p1 == null) {
-                                iDownloadView.downloadSuccess()
+                                iDownloadView.downloadSuccess(Environment.getExternalStorageDirectory().path + apkFile.filename)
                             } else {
                                 iDownloadView.downloadFailed(p1)
                             }

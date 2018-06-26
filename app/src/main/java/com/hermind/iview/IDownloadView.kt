@@ -8,7 +8,7 @@ interface IDownloadView{
 
     fun downloadProgress(progress: Int)
 
-    fun downloadSuccess()
+    fun downloadSuccess(apkFileUri: String)
 
     fun downloadFailed(e: Exception)
 }

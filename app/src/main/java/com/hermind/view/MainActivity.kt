@@ -1,8 +1,6 @@
 package com.hermind.view
 
 import android.Manifest
-import android.app.Dialog
-import android.app.ProgressDialog
 import android.os.Bundle
 import android.os.Handler
 import android.support.design.widget.NavigationView
@@ -12,7 +10,6 @@ import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AlertDialog
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.Toolbar
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
@@ -30,8 +27,10 @@ import com.hermind.presenter.DownloadPresenter
 import com.hermind.presenter.MainPresenter
 import com.hermind.presenter.VersionPresenter
 import com.hermind.public.utils.SystemUtils
+import com.hermind.utils.InstallApkUtils
 import com.tbruyelle.rxpermissions2.RxPermissions
 import kotlinx.android.synthetic.main.content_main.*
+import java.util.*
 
 
 class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedListener, IMainView, IDownloadView, IVersionView {
@@ -47,7 +46,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
     //init progress view
     private var progressText: TextView? = null
-    private var progressBar:ProgressBar? = null
+    private var progressBar: ProgressBar? = null
     private var progressDialog: AlertDialog? = null
     private val progressHandler: ProgressHandler = ProgressHandler()
 
@@ -86,9 +85,9 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                 Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 .subscribe({
                     if (it) {
-                        toast("同意权限")
+                        toast(getString(R.string.agress_permission))
                     } else {
-                        toast("拒绝权限")
+                        toast(getString(R.string.refuse_permission))
                     }
                 })
 
@@ -130,8 +129,6 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
     override fun loadMoreDatas(list: List<Message>) {
         //分页加载更多，每次加载最多10条数据
-
-        Log.i("lgq", "list:" + list.toString())
         if (list.isEmpty()) {
             toast(getString(R.string.no_more_data))
         } else if (list.size < skip) {
@@ -216,6 +213,13 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         val id = item.itemId
 
         if (id == R.id.version_name) {
+            AlertDialog.Builder(this)
+                    .setTitle("提示")
+                    .setMessage(String.format(Locale.getDefault(),
+                            getString(R.string.local_version), SystemUtils.getLoaalVesionName(this)))
+                    .setPositiveButton("我知道了") { dialog, _ -> dialog?.dismiss() }
+                    .show()
+
             // Handle the camera action
         } else if (id == R.id.connect_me) {
 
@@ -233,9 +237,10 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     }
 
 
-    override fun downloadSuccess() {
+    override fun downloadSuccess(apkFileUri: String) {
         toast("下载完成")
         progressDialog?.dismiss()
+        InstallApkUtils.install(this, apkFileUri)
     }
 
     override fun downloadFailed(e: Exception) {
