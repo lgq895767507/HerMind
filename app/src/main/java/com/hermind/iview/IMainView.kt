@@ -6,14 +6,14 @@ interface IMainView {
 
     fun showDatas(list: List<Message>)
 
-    fun showDatasFailed(e: Exception)
+    fun showDatasFailed(e: Throwable)
 
     fun refreshDatas(list: List<Message>)
 
-    fun refreshDatasFailed(e: Exception)
+    fun refreshDatasFailed(e: Throwable)
 
     fun loadMoreDatas(list: List<Message>)
 
-    fun loadMoreDatasFailed(e: Exception)
+    fun loadMoreDatasFailed(e: Throwable)
 
 }

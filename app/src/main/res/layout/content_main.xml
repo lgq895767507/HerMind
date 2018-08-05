@@ -30,12 +30,4 @@
 
     </com.scwang.smartrefresh.layout.SmartRefreshLayout>
 
-   <!-- <ProgressBar
-        android:layout_centerInParent="true"
-        android:id="@+id/progress"
-        style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:layout_gravity="center" />-->
-
 </RelativeLayout>

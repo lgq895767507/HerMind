@@ -10,5 +10,5 @@ interface IVersionView {
 
     fun reqLastestVersion(versionModel: VersionModel)
 
-    fun reqVersionFailed(e: Exception)
+    fun reqVersionFailed(e: Throwable)
 }

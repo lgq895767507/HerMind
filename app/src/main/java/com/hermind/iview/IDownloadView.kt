@@ -10,5 +10,5 @@ interface IDownloadView{
 
     fun downloadSuccess(apkFileUri: String)
 
-    fun downloadFailed(e: Exception)
+    fun downloadFailed(e: Throwable)
 }

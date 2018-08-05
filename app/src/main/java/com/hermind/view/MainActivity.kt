@@ -1,6 +1,7 @@
 package com.hermind.view
 
 import android.Manifest
+import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.support.design.widget.NavigationView
@@ -113,7 +114,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         }
     }
 
-    override fun showDatasFailed(e: Exception) {
+    override fun showDatasFailed(e: Throwable) {
         toast(e.toString())
     }
 
@@ -123,7 +124,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         mainDataAdapter?.notifyDataSetChanged()
     }
 
-    override fun refreshDatasFailed(e: Exception) {
+    override fun refreshDatasFailed(e: Throwable) {
         toast(e.toString())
     }
 
@@ -147,7 +148,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         }
     }
 
-    override fun loadMoreDatasFailed(e: Exception) {
+    override fun loadMoreDatasFailed(e: Throwable) {
         toast(e.toString())
     }
 
@@ -175,7 +176,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     }
 
 
-    override fun reqVersionFailed(e: Exception) {
+    override fun reqVersionFailed(e: Throwable) {
         toast(e.toString())
     }
 
@@ -203,6 +204,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
 
         return if (id == R.id.action_settings) {
+            startActivity(Intent(this@MainActivity, PublishActivity::class.java))
             true
         } else super.onOptionsItemSelected(item)
 
@@ -243,7 +245,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         InstallApkUtils.install(this, apkFileUri)
     }
 
-    override fun downloadFailed(e: Exception) {
+    override fun downloadFailed(e: Throwable) {
         toast("下载失败" + e.toString())
         progressDialog?.dismiss()
     }
