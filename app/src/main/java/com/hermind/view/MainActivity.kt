@@ -15,6 +15,8 @@ import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.animation.AnimationUtils
+import android.view.animation.LayoutAnimationController
 import android.widget.ProgressBar
 import android.widget.TextView
 import com.hermind.R
@@ -85,9 +87,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         rxPermissions.request(Manifest.permission.READ_PHONE_STATE,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 .subscribe({
-                    if (it) {
-                        toast(getString(R.string.agress_permission))
-                    } else {
+                    if (!it) {
                         toast(getString(R.string.refuse_permission))
                     }
                 })
@@ -112,6 +112,11 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             it.finishLoadMore(2000)
             mainPresenter.loadMoreDatas(skip)
         }
+        val controller = LayoutAnimationController(AnimationUtils.loadAnimation(this,R.anim.item_layout))
+        controller.order = LayoutAnimationController.ORDER_NORMAL
+        controller.delay = 0.5f
+        recycleView.layoutAnimation =controller
+        recycleView.startLayoutAnimation()
     }
 
     override fun showDatasFailed(e: Throwable) {

@@ -13,3 +13,5 @@
 app/release/
 app.jks
 .idea/
+.idea/caches/
+.idea/misc.xml
