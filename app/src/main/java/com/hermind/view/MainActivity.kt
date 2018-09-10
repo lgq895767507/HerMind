@@ -112,11 +112,11 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             it.finishLoadMore(2000)
             mainPresenter.loadMoreDatas(skip)
         }
-        val controller = LayoutAnimationController(AnimationUtils.loadAnimation(this,R.anim.item_layout))
+       /* val controller = LayoutAnimationController(AnimationUtils.loadAnimation(this,R.anim.item_layout))
         controller.order = LayoutAnimationController.ORDER_NORMAL
         controller.delay = 0.5f
         recycleView.layoutAnimation =controller
-        recycleView.startLayoutAnimation()
+        recycleView.startLayoutAnimation()*/
     }
 
     override fun showDatasFailed(e: Throwable) {
